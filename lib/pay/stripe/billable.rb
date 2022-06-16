@@ -50,7 +50,7 @@ module Pay
       # Handles Billable#charge
       #
       # Returns Pay::Charge
-      def charge(amount, options = {})
+      def charge(amount, stripe_account_id = nil, options = {})
         stripe_customer = customer
         args = {
           amount: amount,
@@ -61,7 +61,7 @@ module Pay
           payment_method: stripe_customer.invoice_settings.default_payment_method
         }.merge(options)
 
-        payment_intent = ::Stripe::PaymentIntent.create(args)
+        payment_intent = ::Stripe::PaymentIntent.create(args, stripe_account_id: stripe_account_id)
         Pay::Payment.new(payment_intent).validate
 
         # Create a new charge object
